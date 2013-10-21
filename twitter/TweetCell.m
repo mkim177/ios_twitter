@@ -10,6 +10,19 @@
 
 @implementation TweetCell
 
+- (void) initWithTweet:(Tweet *)tweet
+{
+    NSLog(@"%@, %@", tweet.username, tweet.text);
+    self.textLabel.text = tweet.text;
+    self.userNameLabel.text = tweet.username;
+    self.dateLabel.text = tweet.createdDate;
+    
+    NSURL * imageURL = [NSURL URLWithString:tweet.profilePicUrl];
+    NSData * imageData = [NSData dataWithContentsOfURL:imageURL];
+    UIImage * image = [UIImage imageWithData:imageData];
+    [self.profileImageView setImage:image];
+}
+
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];

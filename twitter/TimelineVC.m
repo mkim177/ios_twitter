@@ -6,11 +6,13 @@
 //  Copyright (c) 2013 codepath. All rights reserved.
 //
 
+#import "TweetCell.h"
 #import "TimelineVC.h"
 
 @interface TimelineVC ()
 
 @property (nonatomic, strong) NSMutableArray *tweets;
+@property (nonatomic, strong) TweetCell *offscreenCell;
 
 - (void)onSignOutButton;
 - (void)reload;
@@ -34,8 +36,12 @@
 {
     [super viewDidLoad];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(onSignOutButton)];
+    UINib *customNib = [UINib nibWithNibName:@"TweetCell" bundle:nil];
+    [self.tableView registerNib:customNib forCellReuseIdentifier:@"TweetCell"];
 
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(onSignOutButton)];
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -63,59 +69,50 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-
+    static NSString *CellIdentifier = @"TweetCell";
+    TweetCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    
+    if (cell == nil) {
+        cell = [[TweetCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    }
+    
     Tweet *tweet = self.tweets[indexPath.row];
-    cell.textLabel.text = tweet.text;
+    [cell initWithTweet:tweet];
     
     return cell;
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
 #pragma mark - Table view delegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 80.0f;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (self.offscreenCell == nil) {
+        self.offscreenCell = [[TweetCell alloc] init];
+    }
+    
+    Tweet *tweet = self.tweets[indexPath.row];
+    [self.offscreenCell initWithTweet:tweet];
+        
+    [self.offscreenCell.contentView setNeedsLayout];
+    [self.offscreenCell.contentView layoutIfNeeded];
+    
+    CGFloat height = [self.offscreenCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+
+    NSLog(@"%f", height);
+    if (height == 0.0f) {
+        height = 150.0f; // min height
+    }
+    return height;
 }
 
 /*
