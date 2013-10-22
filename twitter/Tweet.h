@@ -11,7 +11,11 @@
 @interface Tweet : RestObject
 
 @property (nonatomic, strong, readonly) NSString *text;
+@property (nonatomic, strong) NSString *tweetId;
+@property (nonatomic, strong) NSString *favorited;
+@property (nonatomic, strong) NSString *retweeted;
 @property (nonatomic, strong) NSString *username;
+@property (nonatomic, strong) NSString *screenName;
 @property (nonatomic, strong) NSString *profilePicUrl;
 @property (nonatomic, strong) NSString *createdDate;
 

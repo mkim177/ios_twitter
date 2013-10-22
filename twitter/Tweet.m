@@ -12,12 +12,28 @@
 
 static NSDateFormatter *tweetDateFormatter = nil;
 
+- (NSString *)tweetId {
+    return [self.data valueOrNilForKeyPath:@"id"];
+}
+
+- (NSString *)favorited {
+    return [self.data valueOrNilForKeyPath:@"favorited"];
+}
+
+- (NSString *)retweeted {
+    return [self.data valueOrNilForKeyPath:@"retweeted"];
+}
+
 - (NSString *)text {
     return [self.data valueOrNilForKeyPath:@"text"];
 }
 
 - (NSString *)username {
     return [self.data valueOrNilForKeyPath:@"user.name"];
+}
+
+- (NSString *)screenName {
+    return [self.data valueOrNilForKeyPath:@"user.screen_name"];
 }
 
 - (NSString *)profilePicUrl {
@@ -31,7 +47,7 @@ static NSDateFormatter *tweetDateFormatter = nil;
     if (tweetDateFormatter == nil)
     {
         tweetDateFormatter = [[NSDateFormatter alloc] init];
-        [tweetDateFormatter setDateFormat:@"EEE MMM d hh:mm:ss +0000 yyyy"];
+        [tweetDateFormatter setDateFormat:@"EEE MMM d h:m:s +0000 yyyy"];
         [tweetDateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     }
     
@@ -46,7 +62,7 @@ static NSDateFormatter *tweetDateFormatter = nil;
     }
     
     //return empty string in case of error
-    return @"";
+    return createdDateString;
 }
 
 + (NSMutableArray *)tweetsWithArray:(NSArray *)array {

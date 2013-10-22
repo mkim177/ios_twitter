@@ -16,5 +16,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *textLabel;
 
 - (void) initWithTweet:(Tweet *)tweet;
+- (CGFloat) cellHeight;
 
 @end

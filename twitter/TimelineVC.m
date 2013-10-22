@@ -8,12 +8,15 @@
 
 #import "TweetCell.h"
 #import "TimelineVC.h"
+#import "TweetViewController.h"
+#import "ComposeTweetViewController.h"
 
 @interface TimelineVC ()
 
 @property (nonatomic, strong) NSMutableArray *tweets;
 @property (nonatomic, strong) TweetCell *offscreenCell;
 
+- (void)onNewTweetButton;
 - (void)onSignOutButton;
 - (void)reload;
 
@@ -41,6 +44,8 @@
 
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(onSignOutButton)];
+    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Tweet+" style:UIBarButtonItemStylePlain target:self action:@selector(onNewTweetButton)];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -86,7 +91,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    TweetViewController *tvc = [[TweetViewController alloc] init];
+    [tvc initWithTweet:self.tweets[indexPath.row]];
+    [self.navigationController pushViewController:tvc animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -102,16 +110,12 @@
     
     Tweet *tweet = self.tweets[indexPath.row];
     [self.offscreenCell initWithTweet:tweet];
-        
-    [self.offscreenCell.contentView setNeedsLayout];
-    [self.offscreenCell.contentView layoutIfNeeded];
     
-    CGFloat height = [self.offscreenCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-
-    NSLog(@"%f", height);
-    if (height == 0.0f) {
-        height = 150.0f; // min height
-    }
+    [self.offscreenCell setNeedsLayout];
+    [self.offscreenCell layoutIfNeeded];
+    
+    CGFloat height = [self.offscreenCell cellHeight];
+    
     return height;
 }
 
@@ -128,6 +132,11 @@
  */
 
 #pragma mark - Private methods
+
+- (void)onNewTweetButton {
+    ComposeTweetViewController *ctvc = [[ComposeTweetViewController alloc] init];
+    [self.navigationController pushViewController:ctvc animated:YES];
+}
 
 - (void)onSignOutButton {
     [User setCurrentUser:nil];
