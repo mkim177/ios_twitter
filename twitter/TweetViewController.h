@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Tweet.h"
+#import "ComposeTweetViewController.h"
 
 @interface TweetViewController : UIViewController
-@property (weak, nonatomic) IBOutlet UISegmentedControl *twitterController;
 
 @property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
 @property (weak, nonatomic) IBOutlet UILabel *textLabel;
@@ -17,7 +18,14 @@
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic) Tweet *tweet;
 
-- (IBAction)twitterAction:(id)sender;
+@property (weak, nonatomic) IBOutlet UIToolbar *actionToolbar;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *replyButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *retweetButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *addFavoriteButton;
+
 - (void) initWithTweet:(Tweet *) tweet;
+- (void) onRetweet;
+- (void) onReply;
+- (void) onAddFavorite;
 
 @end

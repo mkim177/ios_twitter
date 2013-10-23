@@ -42,16 +42,18 @@
     UINib *customNib = [UINib nibWithNibName:@"TweetCell" bundle:nil];
     [self.tableView registerNib:customNib forCellReuseIdentifier:@"TweetCell"];
 
+    //Add a pull to refresh control
+    UIRefreshControl *rc = [[UIRefreshControl alloc]init];
+    rc.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to refresh"];
+    [rc addTarget:self action:@selector(reload) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = rc;
+
+    //moved the sign out button to top left
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(onSignOutButton)];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(onSignOutButton)];
+    //add a compose new tweet button to the top right
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Tweet" style:UIBarButtonItemStylePlain target:self action:@selector(onNewTweetButton)];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Tweet+" style:UIBarButtonItemStylePlain target:self action:@selector(onNewTweetButton)];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)didReceiveMemoryWarning
@@ -91,14 +93,17 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    //add a tweet view to the stack on select
     TweetViewController *tvc = [[TweetViewController alloc] init];
     [tvc initWithTweet:self.tweets[indexPath.row]];
+    
     [self.navigationController pushViewController:tvc animated:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    //for offscreen cells
     return 80.0f;
 }
 
@@ -109,31 +114,20 @@
     }
     
     Tweet *tweet = self.tweets[indexPath.row];
-    [self.offscreenCell initWithTweet:tweet];
     
+    //use the offscreen cell to check cell height
+    [self.offscreenCell initWithTweet:tweet];
     [self.offscreenCell setNeedsLayout];
     [self.offscreenCell layoutIfNeeded];
     
+    //get the height for the cell
     CGFloat height = [self.offscreenCell cellHeight];
     
     return height;
 }
 
-/*
-#pragma mark - Navigation
-
-// In a story board-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-
- */
-
-#pragma mark - Private methods
-
 - (void)onNewTweetButton {
+    //create a compose VC
     ComposeTweetViewController *ctvc = [[ComposeTweetViewController alloc] init];
     [self.navigationController pushViewController:ctvc animated:YES];
 }
@@ -144,6 +138,8 @@
 
 - (void)reload {
     [[TwitterClient instance] homeTimelineWithCount:20 sinceId:0 maxId:0 success:^(AFHTTPRequestOperation *operation, id response) {
+        [self.refreshControl endRefreshing];
+        
         NSLog(@"%@", response);
         self.tweets = [Tweet tweetsWithArray:response];
         [self.tableView reloadData];

@@ -27,17 +27,42 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    
+    //set the Tweet View UI with data from the tweet model
     self.textLabel.text = self.tweet.text;
     self.userNameLabel.text = [NSString stringWithFormat:@"%@ @%@",self.tweet.username,self.tweet.screenName];
     self.dateLabel.text = self.tweet.createdDate;
     
+    // handle the image again - need a better way to do this
     NSURL * imageURL = [NSURL URLWithString:self.tweet.profilePicUrl];
     NSData * imageData = [NSData dataWithContentsOfURL:imageURL];
     UIImage * image = [UIImage imageWithData:imageData];
     
-    //NSLog(@"%@, %@, %f, %f", tweet.username, tweet.createdDate, image.size.width, image.size.height);
-    
     [self.profileImageView setImage:image];
+    
+    NSString *myScreenName = [[User currentUser] valueOrNilForKeyPath:@"screen_name"];
+    
+    //setup button actions
+    [self.replyButton setTarget:self];
+    [self.replyButton setAction:@selector(onReply)];
+    
+    //don't allow user to retweet their own post or if already retweeted
+    if (self.tweet.retweeted || [self.tweet.screenName isEqualToString:myScreenName]) {
+        self.retweetButton.enabled = NO;
+    }
+    else {
+        [self.retweetButton setTarget:self];
+        [self.retweetButton setAction:@selector(onRetweet)];
+    }
+
+    //don't allow user to favorite their own post or if already favorited
+    if (self.tweet.favorited || [self.tweet.screenName isEqualToString:myScreenName]) {
+        self.addFavoriteButton.enabled = NO;
+    }
+    else {
+        [self.addFavoriteButton setTarget:self];
+        [self.addFavoriteButton setAction:@selector(onAddFavorite)];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -46,23 +71,35 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)twitterAction:(id)sender {
-    switch (self.twitterController.selectedSegmentIndex) {
-        case 0:
-            NSLog(@"Reply to tweet");
-            break;
-        case 1:
-            NSLog(@"Retweet");
-            break;
-        case 2:
-            NSLog(@"Add to favorites");
-            break;
-
-        default:
-            break;
-    }
+- (void)onAddFavorite
+{
+    [[TwitterClient instance] addFavoriteWithTweetId:self.tweet.tweetId success:^(AFHTTPRequestOperation *operation, id response) {
+        self.addFavoriteButton.enabled = NO;
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"%@", [error description]);
+    }];
+   
 }
 
+- (void)onReply
+{
+    // use ComposeTweetViewController for a reply, but set a replyTweet
+    ComposeTweetViewController *ctvc = [[ComposeTweetViewController alloc]init];
+    ctvc.replyTweet = self.tweet;
+    [self.navigationController pushViewController:ctvc animated:YES];
+}
+
+- (void)onRetweet
+{
+    [[TwitterClient instance] retweetWithTweetId:self.tweet.tweetId success:^(AFHTTPRequestOperation *operation, id response) {
+        self.retweetButton.enabled = NO;
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"%@", [error description]);
+    }];
+    
+}
+
+// function to pass a tweet to this controller
 - (void) initWithTweet:(Tweet *)tweet
 {
     self.tweet = tweet;

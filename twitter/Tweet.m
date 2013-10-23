@@ -16,12 +16,14 @@ static NSDateFormatter *tweetDateFormatter = nil;
     return [self.data valueOrNilForKeyPath:@"id"];
 }
 
-- (NSString *)favorited {
-    return [self.data valueOrNilForKeyPath:@"favorited"];
+- (BOOL)isFavorited {
+    NSNumber *val = [self.data valueOrNilForKeyPath:@"favorited"];
+    return [val boolValue];
 }
 
-- (NSString *)retweeted {
-    return [self.data valueOrNilForKeyPath:@"retweeted"];
+- (BOOL)isRetweeted {
+    NSNumber *val = [self.data valueOrNilForKeyPath:@"retweeted"];
+    return [val boolValue];
 }
 
 - (NSString *)text {

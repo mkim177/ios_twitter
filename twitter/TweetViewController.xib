@@ -7,10 +7,13 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TweetViewController">
             <connections>
+                <outlet property="actionToolbar" destination="PFO-gl-s7X" id="RO0-gU-eTo"/>
+                <outlet property="addFavoriteButton" destination="JAo-a3-gLK" id="2zp-kB-VyI"/>
                 <outlet property="dateLabel" destination="NPx-HG-H1A" id="c3K-HY-1Jt"/>
                 <outlet property="profileImageView" destination="Hns-oj-P88" id="lEA-7x-kJm"/>
+                <outlet property="replyButton" destination="BR7-Uz-cNq" id="ZCn-va-Jp8"/>
+                <outlet property="retweetButton" destination="px0-N0-QTd" id="A8q-he-mdy"/>
                 <outlet property="textLabel" destination="hoP-D6-Zck" id="Wns-ar-qgY"/>
-                <outlet property="twitterController" destination="fHz-rS-ely" id="yi5-Mo-1Sc"/>
                 <outlet property="userNameLabel" destination="RF7-DW-9fa" id="kGT-ac-ktR"/>
                 <outlet property="view" destination="1" id="3"/>
             </connections>
@@ -60,30 +63,24 @@
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="fHz-rS-ely">
-                    <rect key="frame" x="12" y="300" width="280" height="29"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="280" id="jJt-qS-GKL"/>
-                        <constraint firstAttribute="height" constant="28" id="uAD-zI-MaZ"/>
-                    </constraints>
-                    <segments>
-                        <segment title="Reply"/>
-                        <segment title="Retweet"/>
-                        <segment title="Favorite"/>
-                    </segments>
-                    <connections>
-                        <action selector="twitterAction:" destination="-1" eventType="touchUpInside" id="NdJ-3m-rAR"/>
-                    </connections>
-                </segmentedControl>
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="center" translatesAutoresizingMaskIntoConstraints="NO" id="PFO-gl-s7X">
+                    <rect key="frame" x="0.0" y="333" width="320" height="44"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <items>
+                        <barButtonItem title="Reply" width="90" id="BR7-Uz-cNq"/>
+                        <barButtonItem title="Retweet" width="95" id="px0-N0-QTd"/>
+                        <barButtonItem title="+Favorite" id="JAo-a3-gLK"/>
+                    </items>
+                </toolbar>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="NPx-HG-H1A" firstAttribute="top" secondItem="Hns-oj-P88" secondAttribute="bottom" constant="12" id="0Ar-HU-7tv"/>
-                <constraint firstItem="fHz-rS-ely" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="12" id="75U-0X-McI"/>
                 <constraint firstItem="Hns-oj-P88" firstAttribute="top" secondItem="1" secondAttribute="top" constant="70" id="DtQ-lF-nqo"/>
-                <constraint firstItem="fHz-rS-ely" firstAttribute="top" secondItem="hoP-D6-Zck" secondAttribute="bottom" constant="12" id="PUw-oA-svS"/>
+                <constraint firstItem="PFO-gl-s7X" firstAttribute="top" secondItem="hoP-D6-Zck" secondAttribute="bottom" constant="45" id="Q8A-lK-oMw"/>
+                <constraint firstItem="PFO-gl-s7X" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="Tgc-WI-m40"/>
                 <constraint firstItem="RF7-DW-9fa" firstAttribute="leading" secondItem="Hns-oj-P88" secondAttribute="trailing" constant="12" id="WId-k8-jGH"/>
+                <constraint firstAttribute="trailing" secondItem="PFO-gl-s7X" secondAttribute="trailing" id="XwE-l0-Q8V"/>
                 <constraint firstItem="Hns-oj-P88" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="20" id="Yaf-AD-uOB"/>
                 <constraint firstItem="hoP-D6-Zck" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="12" id="a7f-2A-aDQ"/>
                 <constraint firstItem="RF7-DW-9fa" firstAttribute="top" secondItem="1" secondAttribute="top" constant="80" id="hL0-oV-7Di"/>

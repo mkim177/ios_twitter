@@ -13,7 +13,7 @@
 
 - (void) initWithTweet:(Tweet *)tweet
 {
-    
+    //initialize cell ui with data from the tweet
     self.textLabel.text = tweet.text;
     self.userNameLabel.text = [NSString stringWithFormat:@"%@ @%@",tweet.username,tweet.screenName];
     self.dateLabel.text = tweet.createdDate;
@@ -22,21 +22,21 @@
     NSData * imageData = [NSData dataWithContentsOfURL:imageURL];
     UIImage * image = [UIImage imageWithData:imageData];
     
-    //NSLog(@"%@, %@, %f, %f", tweet.username, tweet.createdDate, image.size.width, image.size.height);
-    
     [self.profileImageView setImage:image];
 }
 
+// instance function to determine this cell's height
 - (CGFloat) cellHeight
 {
+    //set the string in the label
     NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:self.textLabel.text attributes:@{NSFontAttributeName: self.textLabel.font}];
+    
+    //get the rendered label size
     CGRect rect = [attributedText boundingRectWithSize:(CGSize){self.textLabel.frame.size.width, CGFLOAT_MAX} options:NSStringDrawingUsesLineFragmentOrigin context:nil];
     CGSize labelSize = rect.size;
     
-    NSLog(@"%f", labelSize.height);
-
-    //cellHeight is top margin + image height + mid margin + label height
-    CGFloat height = ceilf(4.0f + 48.0f + 4.0f + labelSize.height);
+    //cellHeight is top margin + image height + mid margin + label height + filler
+    CGFloat height = ceilf(4.0f + 48.0f + 4.0f + labelSize.height + 2.0f);
     
     return height;
 }

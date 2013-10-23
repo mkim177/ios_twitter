@@ -10,6 +10,8 @@
 
 @interface ComposeTweetViewController ()
 
+-(void)onTweet;
+
 @end
 
 @implementation ComposeTweetViewController
@@ -18,7 +20,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        
+        self.title = @"Compose";
     }
     return self;
 }
@@ -26,8 +28,19 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.tweetTextView.delegate = self;
     
-    self.tweetTextView.text = @"What's happening?";
+    if (self.replyTweet != nil) {
+        //same vc is used for replies if a replyTweet is set
+        self.title = @"Reply";
+        self.tweetTextView.text = [NSString stringWithFormat:@"@%@ ", self.replyTweet.screenName];
+    }
+    
+    //add the publish button to the top right
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Tweet" style:UIBarButtonItemStylePlain target:self action:@selector(onTweet)];
+    
+    //set user values in the UI
     self.userNameLabel.text = [[User currentUser] valueOrNilForKeyPath:@"name"];
     
     NSString *screenName = [[User currentUser] valueOrNilForKeyPath:@"screen_name"];
@@ -43,6 +56,43 @@
     }
     
     [self.tweetTextView becomeFirstResponder];
+}
+
+// using the UITextView delegate method to check text length
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    //alert the user if text limit is reached
+    if (textView.text.length > 140) {
+        UIAlertView *av = [[UIAlertView alloc]initWithTitle:@"Uh-oh!" message:@"Your Tweet might be too long. Stick to less than 140 characters." delegate:self cancelButtonTitle:@"Darn" otherButtonTitles:@"Ok", nil];
+
+        [av show];
+        
+        //truncate text to keep it within the boundary
+        textView.text = [textView.text substringToIndex:139];
+        
+        return NO;
+    }
+    return YES;
+}
+
+- (void)onTweet
+{
+    NSString *tweet = self.tweetTextView.text;
+    
+    if (self.replyTweet != nil) {
+        [[TwitterClient instance] replyWithTweetIdAndString:self.replyTweet.tweetId reply:tweet success:^(AFHTTPRequestOperation *operation, id response) {
+            [self.navigationController popViewControllerAnimated:YES];
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"%@", [error description]);
+        }];
+    }
+    else {
+        [[TwitterClient instance] submitTweetWithMessage:tweet success:^(AFHTTPRequestOperation *operation, id response) {
+            [self.navigationController popViewControllerAnimated:YES];
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"%@", [error description]);
+        }];
+    }
 }
 
 - (void)didReceiveMemoryWarning
