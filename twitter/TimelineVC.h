@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString *const UpdateTimeline;
+
 @interface TimelineVC : UITableViewController
 
 @end

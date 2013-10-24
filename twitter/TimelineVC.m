@@ -11,6 +11,8 @@
 #import "TweetViewController.h"
 #import "ComposeTweetViewController.h"
 
+NSString * const UpdateTimeline = @"UpdateTimeline";
+
 @interface TimelineVC ()
 
 @property (nonatomic, strong) NSMutableArray *tweets;
@@ -29,6 +31,8 @@
     self = [super initWithStyle:style];
     if (self) {
         self.title = @"Twitter";
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reload) name:UpdateTimeline object:nil];
         
         [self reload];
     }

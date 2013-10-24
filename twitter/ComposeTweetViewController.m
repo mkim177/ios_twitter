@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 codepath. All rights reserved.
 //
 
+#import "TimelineVC.h"
 #import "ComposeTweetViewController.h"
 
 @interface ComposeTweetViewController ()
@@ -81,6 +82,7 @@
     
     if (self.replyTweet != nil) {
         [[TwitterClient instance] replyWithTweetIdAndString:self.replyTweet.tweetId reply:tweet success:^(AFHTTPRequestOperation *operation, id response) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:UpdateTimeline object:nil];
             [self.navigationController popViewControllerAnimated:YES];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"%@", [error description]);
@@ -88,6 +90,7 @@
     }
     else {
         [[TwitterClient instance] submitTweetWithMessage:tweet success:^(AFHTTPRequestOperation *operation, id response) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:UpdateTimeline object:nil];
             [self.navigationController popViewControllerAnimated:YES];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"%@", [error description]);
